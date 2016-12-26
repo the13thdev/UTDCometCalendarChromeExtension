@@ -1,0 +1,42 @@
+body{
+  width: 600px;
+  background-color: #33691E;
+  color: #FAFAFA;
+}
+
+.calendar-header{
+  background-color: #FF5722;
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
+.calendar-header .calendar-title a{
+  color: #FAFAFA;
+}
+.calendar-header .calendar-title{
+  font-size: 2em;
+}
+.calendar-header .calendar-date{
+  font-size: 2em;
+}
+
+.calendar-body{
+  padding: 0em;
+}
+
+.calendar-body table{
+  margin-bottom: 0em;
+}
+
+.calendar-body table tr th{
+  font-weight: bold;
+}
+
+.calendar-body table tr td a{
+  color: #FAFAFA;
+}
+
+.no-events-section{
+  padding: 1em;
+  text-align: center;
+}
