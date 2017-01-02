@@ -8,6 +8,9 @@ body{
   background-color: #FF5722;
   padding-top: 1em;
   padding-bottom: 1em;
+  border-bottom-style: solid;
+  border-bottom-color: #FAFAFAs;
+  border-bottom-width: 1px;
 }
 
 .calendar-header .calendar-title a{
@@ -36,7 +39,7 @@ body{
   color: #FAFAFA;
 }
 
-.no-events-section{
+.no-events-section, .loading-events-section{
   padding: 1em;
   text-align: center;
 }

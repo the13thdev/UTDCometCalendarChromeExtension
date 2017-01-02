@@ -22,12 +22,17 @@
 				<h3 class="pull-right calendar-date">{{calendar_data.date.day + " "+ getMonthName(calendar_data.date.month) + " " + calendar_data.date.year}}</h3>
 			</div>
 			<div class="container calendar-body">
-				<table class="table table-bordered table-condensed" ng-show="calendar_data.events.length!=0">
-					<tr> <th class="col-xs-4"> Event Time</th> <th class="col-xs-8"> Event Name</th> </tr>
-					<tr ng-repeat="calendar_event in calendar_data.events"> <td class="col-xs-4"> {{calendar_event.time}} </td> <td class="col-xs-8"> <a target="_blank" ng-href="https://www.utdallas.edu/calendar/event.php?id={{calendar_event.id}}"> {{calendar_event.name}} </a> </td> </tr>
-				</table>
-				<div class="no-events-section" ng-show="calendar_data.events.length==0">
-					<h4>No events available for today.</h4>
+				<div ng-show="request_completed==true">
+					<table class="table table-bordered table-condensed" ng-show="calendar_data.events.length!=0">
+						<tr> <th class="col-xs-4"> Event Time</th> <th class="col-xs-8"> Event Name</th> </tr>
+						<tr ng-repeat="calendar_event in calendar_data.events"> <td class="col-xs-4"> {{calendar_event.time}} </td> <td class="col-xs-8"> <a target="_blank" ng-href="https://www.utdallas.edu/calendar/event.php?id={{calendar_event.id}}"> {{calendar_event.name}} </a> </td> </tr>
+					</table>
+					<div class="no-events-section" ng-show="calendar_data.events.length==0">
+						<h4>No events available for today.</h4>
+					</div>
+				</div>
+				<div class="loading-events-section" ng-show="!request_completed">
+					<h4>Loading data...........</h4>
 				</div>
 			</div>
     </div>

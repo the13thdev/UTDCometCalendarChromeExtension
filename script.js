@@ -9,6 +9,7 @@ var current_date_time = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.ge
 //To make current_date_time match the current date time in dallas.
 current_date_time.setHours(current_date_time.getHours()-6);
 
+
 console.log(current_date_time.getDate()+", "+(current_date_time.getMonth()+1)+", "+ current_date_time.getFullYear());
 
 
@@ -16,6 +17,9 @@ console.log(current_date_time.getDate()+", "+(current_date_time.getMonth()+1)+",
 app.controller('calendarController', function($scope,$http){
 
   $scope.calendar_data={};
+
+  //to keep track of when request gets comepleted
+  $scope.request_completed=false;
 
   //Code to be executed on document.ready()
   angular.element(document).ready(function(){
@@ -36,6 +40,7 @@ app.controller('calendarController', function($scope,$http){
         //using $scope.apply() to update angular bindings
         $scope.$apply(function(){
           $scope.calendar_data=items.calendar_data;
+          $scope.request_completed=true;
         });
       }
       else {
@@ -53,10 +58,12 @@ app.controller('calendarController', function($scope,$http){
             $scope.calendar_data.events=response.data.events;
             chrome.storage.local.set({calendar_data: $scope.calendar_data});
             console.log($scope.calendar_data);
+            $scope.request_completed=true;
           }, function errorCallback(response) {
             //when data could not be fetched
             console.log("Could Not fetch calendar data, error occured!");
             console.log(response);
+            $scope.request_completed=true;
           });
       }
 
