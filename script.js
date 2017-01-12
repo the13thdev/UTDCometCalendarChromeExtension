@@ -1,7 +1,9 @@
-var app = angular.module('calendarApp', []);
+var app = angular.module('calendarApp',[]);
 
-var server_url="https://utd-comet-cal-data-fetcher.herokuapp.com/data";
-//server_url="http://localhost:5000/data"
+var server_url_data="https://utd-comet-cal-data-fetcher.herokuapp.com/data";
+var server_url_eventData="https://utd-comet-cal-data-fetcher.herokuapp.com/eventData";
+/*var server_url_data="http://localhost:5000/data"
+var server_url_eventData="http://localhost:5000/eventData";*/
 
 var now = new Date();
 //getting current_date_time in UTC
@@ -14,12 +16,18 @@ console.log(current_date_time.getDate()+", "+(current_date_time.getMonth()+1)+",
 
 
 //Angular Calendar Controller
-app.controller('calendarController', function($scope,$http){
+app.controller('calendarController', function($scope,$http,$sce){
 
   $scope.calendar_data={};
 
   //to keep track of when request gets comepleted
   $scope.request_completed=false;
+
+  //to render html content
+  $scope.renderHtmlContent = function(html_code){
+    //console.log("..asked to render html");
+    return $sce.trustAsHtml(html_code);
+  };
 
   //Code to be executed on document.ready()
   angular.element(document).ready(function(){
@@ -49,13 +57,27 @@ app.controller('calendarController', function($scope,$http){
         //Getting Calendar Data from server
         $http({
           method: 'GET',
-          url: server_url
+          url: server_url_data
         }).then(function successCallback(response) {
             //when data successfully fetched
             console.log("Calendar Data successfully fetched");
             console.log(response);
             $scope.calendar_data.date=response.data.date;
             $scope.calendar_data.events=response.data.events;
+            //fetching details data for each of the events
+            $scope.calendar_data.events.forEach(function(element){
+              $http({
+                method: 'GET',
+                url: server_url_eventData+"?event_id="+element.id
+              }).then(function successCallback(response){
+                element.details={location:response.data.location, description_html:response.data.description_html, contact_html: response.data.contact_html}
+                //updating chrome local storage data to include current_event_details
+                chrome.storage.local.set({calendar_data: $scope.calendar_data});
+              }, function errorCallback(response){
+                console.log("Error fetching details for following element");
+                console.log(element);
+              });
+            });
             chrome.storage.local.set({calendar_data: $scope.calendar_data});
             console.log($scope.calendar_data);
             $scope.request_completed=true;

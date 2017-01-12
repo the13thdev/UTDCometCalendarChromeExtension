@@ -9,7 +9,7 @@ body{
   padding-top: 1em;
   padding-bottom: 1em;
   border-bottom-style: solid;
-  border-bottom-color: #FAFAFAs;
+  border-bottom-color: #FAFAFA;
   border-bottom-width: 1px;
 }
 
@@ -37,6 +37,18 @@ body{
 
 .calendar-body table tr td a{
   color: #FAFAFA;
+}
+
+.table-hover-custom tbody tr:hover td, .table-hover tbody tr:hover th {
+  background-color: #558B2F;
+}
+
+.event-details-section{
+  padding-top: 1em;
+}
+
+.event-details-description{
+  margin-top: 0.5em;
 }
 
 .no-events-section, .loading-events-section{
