@@ -53,7 +53,7 @@ app.controller('calendarController', function($scope,$http,$sce){
       }
       else {
         //data does not exist in local storage
-        console.log("data does not exist, fetching data from server");
+        printLogToStorage("data does not exist, fetching data from server (from main extension).");
         //Getting Calendar Data from server
         $http({
           method: 'GET',
@@ -136,6 +136,25 @@ app.controller('calendarController', function($scope,$http,$sce){
       break;
     }
     return month_name;
+  };
+
+  /*
+    To log information to chrome local storage.
+  */
+  function printLogToStorage(data){
+    console.log(data);
+    chrome.storage.local.get(function(items){
+      console.log(items);
+      if(typeof items.storage_log !== 'undefined') {
+        console.log("storage log exists");
+        console.log(items.storage_log);
+        chrome.storage.local.set({storage_log: items.storage_log+"\n"+(new Date())+": "+data});
+      }
+      else {
+        console.log("storage log does not exist");
+        chrome.storage.local.set({storage_log: (new Date())+": "+data});
+      }
+    });
   };
 
 });
