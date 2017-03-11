@@ -49,50 +49,56 @@ app.controller('calendarController', function($scope,$http,$sce){
         $scope.$apply(function(){
           $scope.calendar_data=items.calendar_data;
           $scope.request_completed=true;
+          $scope.request_successful=true;
+          checkIfDataComplete();
         });
       }
       else {
         //data does not exist in local storage
-        printLogToStorage("data does not exist, fetching data from server (from main extension).");
-        //Getting Calendar Data from server
-        $http({
-          method: 'GET',
-          url: server_url_data
-        }).then(function successCallback(response) {
-            //when data successfully fetched
-            console.log("Calendar Data successfully fetched");
-            console.log(response);
-            $scope.calendar_data.date=response.data.date;
-            $scope.calendar_data.events=response.data.events;
-            //fetching details data for each of the events
-            $scope.calendar_data.events.forEach(function(element){
-              $http({
-                method: 'GET',
-                url: server_url_eventData+"?event_id="+element.id
-              }).then(function successCallback(response){
-                element.details={location:response.data.location, description_html:response.data.description_html, contact_html: response.data.contact_html}
-                //updating chrome local storage data to include current_event_details
-                chrome.storage.local.set({calendar_data: $scope.calendar_data});
-              }, function errorCallback(response){
-                console.log("Error fetching details for following element");
-                console.log(element);
-              });
-            });
-            chrome.storage.local.set({calendar_data: $scope.calendar_data});
-            console.log($scope.calendar_data);
-            $scope.request_completed=true;
-          }, function errorCallback(response) {
-            //when data could not be fetched
-            console.log("Could Not fetch calendar data, error occured!");
-            console.log(response);
-            $scope.request_completed=true;
-          });
+        fetchData();
       }
-
-
     });
-
   });
+
+  function fetchData(){
+
+    printLogToStorage("data does not exist, fetching data from server (from main extension).");
+    //Getting Calendar Data from server
+    $http({
+      method: 'GET',
+      url: server_url_data
+    }).then(function successCallback(response) {
+        //when data successfully fetched
+        printLogToStorage("Calendar Data successfully fetched");
+        console.log(response);
+        $scope.calendar_data.date=response.data.date;
+        $scope.calendar_data.events=response.data.events;
+        //fetching details data for each of the events
+        $scope.calendar_data.events.forEach(function(element){
+          $http({
+            method: 'GET',
+            url: server_url_eventData+"?event_id="+element.id
+          }).then(function successCallback(response){
+            element.details={location:response.data.location, description_html:response.data.description_html, contact_html: response.data.contact_html}
+            //updating chrome local storage data to include current_event_details
+            chrome.storage.local.set({calendar_data: $scope.calendar_data});
+          }, function errorCallback(response){
+            console.log("Error fetching details for following element");
+            console.log(element);
+          });
+        });
+        chrome.storage.local.set({calendar_data: $scope.calendar_data});
+        console.log($scope.calendar_data);
+        $scope.request_completed=true;
+        $scope.request_successful=true;
+      }, function errorCallback(response) {
+        //when data could not be fetched
+        printLogToStorage("Could Not fetch calendar data, error occured!");
+        console.log(response);
+        $scope.request_completed=true;
+        $scope.request_successful=false;
+      });
+  }
 
   $scope.getMonthName= function(month_num)  {
     var month_name;
@@ -148,13 +154,24 @@ app.controller('calendarController', function($scope,$http,$sce){
       if(typeof items.storage_log !== 'undefined') {
         console.log("storage log exists");
         console.log(items.storage_log);
-        chrome.storage.local.set({storage_log: items.storage_log+"\n"+(new Date())+": "+data});
+        chrome.storage.local.set({storage_log: items.storage_log+"\nsc.js "+(new Date())+": "+data});
       }
       else {
         console.log("storage log does not exist");
-        chrome.storage.local.set({storage_log: (new Date())+": "+data});
+        chrome.storage.local.set({storage_log: (new Date())+"sc.js : "+data});
       }
     });
+  };
+
+  function checkIfDataComplete(){
+    for (i = 0; i < $scope.calendar_data.events.length ; i++){
+      if(typeof $scope.calendar_data.events[i].details === 'undefined')
+      {
+        fetchData();
+        break;
+      }
+
+    }
   };
 
 });
