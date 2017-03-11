@@ -23,7 +23,20 @@ chrome.runtime.onInstalled.addListener(function(details){
 
 chrome.alarms.onAlarm.addListener(function(alarm){
   printLogToStorage("Alarm Fired");
-  fetchCalendarData();
+  chrome.storage.local.get(function(items){
+    if(items.calendar_data &&
+      items.calendar_data.date.day===current_date_time.getDate() &&
+      items.calendar_data.date.month===(current_date_time.getMonth()+1) &&
+      items.calendar_data.date.year===current_date_time.getFullYear())
+    {
+      //data alread exists
+      printLogToStorage("Data already exists");
+    }
+    else {
+      //data does not exist in local storage
+      fetchCalendarData();
+    }
+  });
 });
 
 function fetchCalendarData(){
@@ -33,6 +46,8 @@ function fetchCalendarData(){
       var xmlHttp = new XMLHttpRequest();
           xmlHttp.onreadystatechange = function() {
               if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+
+                printLogToStorage("Main Data successfuly fetched.");
 
                 var cal_data=JSON.parse(xmlHttp.responseText);
                 //console.log(cal_data);
@@ -53,6 +68,9 @@ function fetchCalendarData(){
                       xmlHttp2.send(null);
                 });
 
+              } else if(xmlHttp.readyState == 4){
+                printLogToStorage("Main data could not be fetched successfuly, setting an alarm 2 minutes from now to try again.");
+                chrome.alarms.create("AlarmFetchData", {delayInMinutes: 2});
               }
           }
           xmlHttp.open("GET", server_url_data, true); // true for asynchronous
@@ -70,11 +88,11 @@ function printLogToStorage(data){
     if(typeof items.storage_log !== 'undefined') {
       console.log("storage log exists");
       console.log(items.storage_log);
-      chrome.storage.local.set({storage_log: items.storage_log+"\n"+(new Date())+": "+data});
+      chrome.storage.local.set({storage_log: items.storage_log+"\nbg.js "+(new Date())+": "+data});
     }
     else {
       console.log("storage log does not exist");
-      chrome.storage.local.set({storage_log: (new Date())+": "+data});
+      chrome.storage.local.set({storage_log: (new Date())+"bg.js : "+data});
     }
   });
 };

@@ -22,7 +22,7 @@
 				<h3 class="pull-right calendar-date">{{calendar_data.date.day + " "+ getMonthName(calendar_data.date.month) + " " + calendar_data.date.year}}</h3>
 			</div>
 			<div class="container calendar-body">
-				<div ng-show="request_completed==true">
+				<div ng-show="request_completed && request_successful">
 					<table class="table table-hover-custom table-condensed" ng-show="calendar_data.events.length!=0">
 						<tr> <th class="col-xs-4"> Event Time</th> <th class="col-xs-8"> Event Name</th> </tr>
 						<tr ng-repeat="calendar_event in calendar_data.events" ng-click="isOpen=!isOpen">
@@ -40,6 +40,9 @@
 					<div class="no-events-section" ng-show="calendar_data.events.length==0">
 						<h4>No events available for today.</h4>
 					</div>
+				</div>
+				<div class="loading-events-section" ng-show="request_completed && !request_successful">
+					<h4>Sorry, data could not be fetched.</h4>
 				</div>
 				<div class="loading-events-section" ng-show="!request_completed">
 					<h4>Loading data...........</h4>
