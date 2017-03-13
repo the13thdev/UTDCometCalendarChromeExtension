@@ -7,7 +7,7 @@ var now = new Date();
 //getting current_date_time in UTC
 var current_date_time = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),  now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
 //To make current_date_time match the current date time in dallas.
-current_date_time.setHours(current_date_time.getHours()-6);
+current_date_time.setMinutes(current_date_time.getMinutes()-current_date_time.getTimezoneOffset());
 
 console.log("Background page...");
 
@@ -70,7 +70,7 @@ function fetchCalendarData(){
 
               } else if(xmlHttp.readyState == 4){
                 printLogToStorage("Main data could not be fetched successfuly, setting an alarm 2 minutes from now to try again.");
-                chrome.alarms.create("AlarmFetchData", {delayInMinutes: 2});
+                chrome.alarms.create("AlarmFetchDataTemp", {delayInMinutes: 2});
               }
           }
           xmlHttp.open("GET", server_url_data, true); // true for asynchronous

@@ -9,11 +9,9 @@ var now = new Date();
 //getting current_date_time in UTC
 var current_date_time = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),  now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
 //To make current_date_time match the current date time in dallas.
-current_date_time.setHours(current_date_time.getHours()-6);
-
+current_date_time.setMinutes(current_date_time.getMinutes()-current_date_time.getTimezoneOffset());
 
 console.log(current_date_time.getDate()+", "+(current_date_time.getMonth()+1)+", "+ current_date_time.getFullYear());
-
 
 //Angular Calendar Controller
 app.controller('calendarController', function($scope,$http,$sce){
