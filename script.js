@@ -5,13 +5,8 @@ var server_url_eventData="https://utd-comet-cal-data-fetcher.herokuapp.com/event
 /*var server_url_data="http://localhost:5000/data"
 var server_url_eventData="http://localhost:5000/eventData";*/
 
-var now = new Date();
-//getting current_date_time in UTC
-var current_date_time = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),  now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
-//To make current_date_time match the current date time in dallas.
-current_date_time.setMinutes(current_date_time.getMinutes()-current_date_time.getTimezoneOffset());
-
-console.log(current_date_time.getDate()+", "+(current_date_time.getMonth()+1)+", "+ current_date_time.getFullYear());
+var time_at_utd = moment().tz("US/Central");
+console.log("day= "+time_at_utd.date()+", month="+(time_at_utd.month()+1)+", year="+time_at_utd.year());
 
 //Angular Calendar Controller
 app.controller('calendarController', function($scope,$http,$sce){
@@ -29,17 +24,17 @@ app.controller('calendarController', function($scope,$http,$sce){
 
   //Code to be executed on document.ready()
   angular.element(document).ready(function(){
-    console.log("document ready, angular working");
+    //console.log("document ready, angular working");
 
     chrome.storage.local.get(function(items){
 
-      console.log("chrome storage log");
-      console.log(items);
+      //console.log("chrome storage log");
+      //console.log(items);
 
       if(items.calendar_data &&
-        items.calendar_data.date.day===current_date_time.getDate() &&
-        items.calendar_data.date.month===(current_date_time.getMonth()+1) &&
-        items.calendar_data.date.year===current_date_time.getFullYear())
+        items.calendar_data.date.day===time_at_utd.date() &&
+        items.calendar_data.date.month===(time_at_utd.month()+1) &&
+        items.calendar_data.date.year===time_at_utd.year())
       {
         //data alread exists
         console.log("Data already exists");
@@ -68,7 +63,7 @@ app.controller('calendarController', function($scope,$http,$sce){
     }).then(function successCallback(response) {
         //when data successfully fetched
         printLogToStorage("Calendar Data successfully fetched");
-        console.log(response);
+        //console.log(response);
         $scope.calendar_data.date=response.data.date;
         $scope.calendar_data.events=response.data.events;
         //fetching details data for each of the events
@@ -86,7 +81,7 @@ app.controller('calendarController', function($scope,$http,$sce){
           });
         });
         chrome.storage.local.set({calendar_data: $scope.calendar_data});
-        console.log($scope.calendar_data);
+        //console.log($scope.calendar_data);
         $scope.request_completed=true;
         $scope.request_successful=true;
       }, function errorCallback(response) {
@@ -146,16 +141,16 @@ app.controller('calendarController', function($scope,$http,$sce){
     To log information to chrome local storage.
   */
   function printLogToStorage(data){
-    console.log(data);
+    //console.log(data);
     chrome.storage.local.get(function(items){
-      console.log(items);
+      //console.log(items);
       if(typeof items.storage_log !== 'undefined') {
-        console.log("storage log exists");
-        console.log(items.storage_log);
+        //console.log("storage log exists");
+        //console.log(items.storage_log);
         chrome.storage.local.set({storage_log: items.storage_log+"\nsc.js "+(new Date())+": "+data});
       }
       else {
-        console.log("storage log does not exist");
+        //console.log("storage log does not exist");
         chrome.storage.local.set({storage_log: (new Date())+"sc.js : "+data});
       }
     });

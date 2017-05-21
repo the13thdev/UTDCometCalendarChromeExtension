@@ -2,8 +2,8 @@
   "manifest_version": 2,
 
   "name": "UTD Comet Calendar",
-  "description": "This extension shows the UTD Comet Calendar for the current day",
-  "version": "1.0",
+  "description": "This extension shows the UTD Comet Calendar for the current day.",
+  "version": "0.0.0.3",
 
   "browser_action": {
     "default_icon": {
@@ -19,13 +19,12 @@
     "128": "images/icon128.png"
   },
   "background": {
-    "scripts": ["background.js"],
+    "scripts": ["moment.js", "moment-timezone.min.js", "moment-timezone-with-data.js", "background.js"],
     "persistent": false
   },
   "permissions": [
     "storage",
     "alarms",
-    "http://localhost:5000/*",
     "https://utd-comet-cal-data-fetcher.herokuapp.com/*"
   ]
 }

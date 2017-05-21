@@ -3,19 +3,15 @@ var server_url_eventData="https://utd-comet-cal-data-fetcher.herokuapp.com/event
 /*var server_url_data="http://localhost:5000/data"
 var server_url_eventData="http://localhost:5000/eventData";*/
 
-var now = new Date();
-//getting current_date_time in UTC
-var current_date_time = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),  now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
-//To make current_date_time match the current date time in dallas.
-current_date_time.setMinutes(current_date_time.getMinutes()-current_date_time.getTimezoneOffset());
+var time_at_utd = moment().tz("US/Central");
 
-console.log("Background page...");
+//console.log("Background page...");
 
 chrome.runtime.onInstalled.addListener(function(details){
   printLogToStorage("onInstalled listener called.");
   fetchCalendarData();
   //setting alarm time for 00:01 for the next day
-  var alarm_time = new Date(current_date_time.getTime());
+  var alarm_time = new Date(time_at_utd.valueOf());
   alarm_time.setHours(24,1,0,0);
   //printLogToStorage("Alarm Time set for "+alarm_time);
   chrome.alarms.create("AlarmFetchData", {when:alarm_time.getTime(), periodInMinutes: 24*60});
@@ -25,9 +21,9 @@ chrome.alarms.onAlarm.addListener(function(alarm){
   printLogToStorage("Alarm Fired");
   chrome.storage.local.get(function(items){
     if(items.calendar_data &&
-      items.calendar_data.date.day===current_date_time.getDate() &&
-      items.calendar_data.date.month===(current_date_time.getMonth()+1) &&
-      items.calendar_data.date.year===current_date_time.getFullYear())
+      items.calendar_data.date.day===time_at_utd.date() &&
+      items.calendar_data.date.month===(time_at_utd.month()+1) &&
+      items.calendar_data.date.year===time_at_utd.year())
     {
       //data alread exists
       printLogToStorage("Data already exists");
@@ -82,16 +78,16 @@ function fetchCalendarData(){
   To log information to chrome local storage as the background evet page is not always active, it loads and unloads when needed.
 */
 function printLogToStorage(data){
-  console.log(data);
+  //console.log(data);
   chrome.storage.local.get(function(items){
-    console.log(items);
+    //console.log(items);
     if(typeof items.storage_log !== 'undefined') {
-      console.log("storage log exists");
-      console.log(items.storage_log);
+      //console.log("storage log exists");
+      //console.log(items.storage_log);
       chrome.storage.local.set({storage_log: items.storage_log+"\nbg.js "+(new Date())+": "+data});
     }
     else {
-      console.log("storage log does not exist");
+      //console.log("storage log does not exist");
       chrome.storage.local.set({storage_log: (new Date())+"bg.js : "+data});
     }
   });
